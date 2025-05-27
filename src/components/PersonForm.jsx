@@ -4,7 +4,7 @@ const PersonForm = ({addPerson, newName, newNumber, handleNameChange, handleNumb
   return (
     <form onSubmit={addPerson}>
         <div>
-          name:
+          Name:
           <input
             value={newName}
             // El valor del input está controlado por el estado newName
@@ -13,7 +13,7 @@ const PersonForm = ({addPerson, newName, newNumber, handleNameChange, handleNumb
           />
         </div>
         <div>
-          number:
+          Number:
           <input
             value={newNumber}
             // El valor del input está controlado por el estado newNumber
