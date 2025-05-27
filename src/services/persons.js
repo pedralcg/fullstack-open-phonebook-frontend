@@ -1,7 +1,12 @@
 import axios from 'axios'; // Importa axios para realizar peticiones HTTP
 
-// Define la URL base para el recurso 'persons' en tu json-server
-const baseUrl = 'http://localhost:3001/persons';
+//// Define la URL base para el recurso 'persons' en tu json-server
+//// const baseUrl = 'http://localhost:3001/persons';
+
+// La base URL de la API. Como el frontend y el backend se sirven desde el mismo origen
+// en producción (gracias a 'express.static'), podemos usar una URL relativa.
+const baseUrl = '/api/persons'
+
 
 // Función para obtener todas las personas del servidor
 const getAll = () => {
