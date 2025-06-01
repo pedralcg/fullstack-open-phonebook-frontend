@@ -89,16 +89,20 @@ const App = () => {
           .catch(error => {
             console.error(`Error updating ${newName}:`, error);
             if (error.response && error.response.status === 404) {
-              //* Mensaje de error para 404 en actualización
+              //* Mensaje de error para 404 en actualización (persona ya eliminada)
               setNotificationMessage(`Information of ${newName} has already been removed from server.`);
               setNotificationType('error');
-              setPersons(persons.filter(person => person.id !== existingPerson.id));
+              setPersons(persons.filter(person => person.id !== existingPerson.id)); // Eliminar de la UI
+            } else if (error.response && error.response.data && error.response.data.error) {
+              //* Mensaje de error de validación u otro error del backend (ej. 400 Bad Request)
+              setNotificationMessage(error.response.data.error);
+              setNotificationType('error');
             } else {
-              //* Mensaje de error genérico para actualización
+            //* Mensaje de error genérico si no se puede extraer uno específico
               setNotificationMessage(`Failed to update ${newName}'s number. Please check the server.`);
               setNotificationType('error');
             }
-            setTimeout(() => {
+              setTimeout(() => {
               setNotificationMessage(null);
               setNotificationType(null);
             }, 5000);
@@ -127,9 +131,14 @@ const App = () => {
         })
         .catch(error => {
           console.error('Error adding person to backend:', error);
-          //* Mensaje de error si falla la creación
-          setNotificationMessage('Failed to add person to phonebook. Please check the server.');
-          setNotificationType('error');
+          //* ¡Aquí es donde se extrae el mensaje de error de validación para la creación!
+          if (error.response && error.response.data && error.response.data.error) {
+            setNotificationMessage(error.response.data.error);
+            setNotificationType('error');
+          } else {
+            setNotificationMessage('Failed to add person to phonebook. Please check the server.');
+            setNotificationType('error');
+          }
           setTimeout(() => {
             setNotificationMessage(null);
             setNotificationType(null);
@@ -163,9 +172,18 @@ const App = () => {
         .catch(error => {
           console.error(`Error deleting ${name}:`, error);
           //* Mensaje de error para la eliminación
-          setNotificationMessage(`Information of ${name} has already been removed from server.`);
-          setNotificationType('error');
-          setPersons(persons.filter(person => person.id !== id));
+          // Aquí también podemos intentar extraer el error específico del backend
+          if (error.response && error.response.data && error.response.data.error) {
+            setNotificationMessage(error.response.data.error);
+            setNotificationType('error');
+            // Si el error es 404, la persona ya no existe, así que la eliminamos de la UI
+            if (error.response.status === 404) {
+              setPersons(persons.filter(person => person.id !== id));
+            }
+          } else {
+            setNotificationMessage(`Failed to delete ${name}. Please check the server.`);
+            setNotificationType('error');
+          }
           setTimeout(() => {
             setNotificationMessage(null);
             setNotificationType(null);
